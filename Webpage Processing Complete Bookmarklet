@@ -1,0 +1,1 @@
+javascript:(function(){var e=0;function t(){console.log("Beep!")}var n=new MutationObserver(function(n){n.forEach(function(n){if("style"===n.attributeName){var o=document.body.style.cursor;if("default"===o&&n.oldValue&&n.oldValue.includes("cursor: wait;")){var r=(new Date).getTime(),u=r-e;u>1500&&(t(),e=r)}}})});n.observe(document.body,{attributes:!0,attributeOldValue:!0})})();
