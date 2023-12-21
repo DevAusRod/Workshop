@@ -17,10 +17,17 @@ document.body.appendChild(box);
 
 let isProcessing = false;
 let switchTime;
+let resetTimeout;
 
 // Function to toggle box color
 function toggleBoxColor() {
   box.style.backgroundColor = isProcessing ? 'red' : 'blue';
+}
+
+// Function to reset processing status after a delay
+function resetProcessingStatus() {
+  isProcessing = false;
+  toggleBoxColor();
 }
 
 // Function to handle cursor change
@@ -37,6 +44,10 @@ function handleCursorChange(mutations) {
       if (timeDifference > 1500) {
         isProcessing = false;
         toggleBoxColor();
+
+        // Reset processing status after a delay
+        clearTimeout(resetTimeout);
+        resetTimeout = setTimeout(resetProcessingStatus, 1500);
       }
     }
   });
