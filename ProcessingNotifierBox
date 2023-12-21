@@ -1,0 +1,46 @@
+// Create the box element
+const box = document.createElement('div');
+box.style.position = 'fixed';
+box.style.bottom = '10px';
+box.style.left = '10px';
+box.style.width = '50px';
+box.style.height = '50px';
+box.style.backgroundColor = 'blue';
+box.style.color = 'white';
+box.style.textAlign = 'center';
+box.style.lineHeight = '50px';
+box.style.cursor = 'pointer';
+box.innerHTML = 'Status';
+
+// Append the box to the document body
+document.body.appendChild(box);
+
+let processingStatus = false;
+let cursorSwitchTime;
+
+// Function to toggle box color
+function toggleBoxColor() {
+  box.style.backgroundColor = processingStatus ? 'red' : 'blue';
+}
+
+// Function to handle cursor change
+function handleCursorChange(mutations) {
+  mutations.forEach(function (mutation) {
+    const currentCursor = document.body.style.cursor;
+
+    if (currentCursor === 'default' && cursorSwitchTime) {
+      const timeDifference = new Date().getTime() - cursorSwitchTime;
+      if (timeDifference > 1500) {
+        processingStatus = !processingStatus;
+        toggleBoxColor();
+      }
+      cursorSwitchTime = null;
+    } else if (currentCursor === 'wait') {
+      cursorSwitchTime = new Date().getTime();
+    }
+  });
+}
+
+// Create a MutationObserver to watch for changes in the style attribute of the body
+const observer = new MutationObserver(handleCursorChange);
+observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
