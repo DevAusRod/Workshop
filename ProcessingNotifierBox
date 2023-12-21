@@ -15,20 +15,33 @@ box.innerHTML = 'Status';
 // Append the box to the document body
 document.body.appendChild(box);
 
+let isProcessing = false;
+let switchTime;
+
 // Function to toggle box color
 function toggleBoxColor() {
-  box.style.backgroundColor = 'red';
+  box.style.backgroundColor = isProcessing ? 'red' : 'blue';
 }
 
-// Create a MutationObserver to watch for changes in the style attribute of the body
-const observer = new MutationObserver(function (mutations) {
+// Function to handle cursor change
+function handleCursorChange(mutations) {
   mutations.forEach(function (mutation) {
     const currentCursor = document.body.style.cursor;
 
-    if (currentCursor === 'wait') {
+    if (currentCursor === 'wait' && !isProcessing) {
+      switchTime = new Date().getTime();
+      isProcessing = true;
       toggleBoxColor();
+    } else if (currentCursor === 'default' && isProcessing) {
+      const timeDifference = new Date().getTime() - switchTime;
+      if (timeDifference > 1500) {
+        isProcessing = false;
+        toggleBoxColor();
+      }
     }
   });
-});
+}
 
+// Create a MutationObserver to watch for changes in the style attribute of the body
+const observer = new MutationObserver(handleCursorChange);
 observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
