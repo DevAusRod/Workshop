@@ -1,58 +1,43 @@
-// Create the box element
-const box = document.createElement('div');
-box.style.position = 'fixed';
-box.style.bottom = '10px';
-box.style.left = '10px';
-box.style.width = '50px';
-box.style.height = '50px';
-box.style.backgroundColor = 'blue';
-box.style.color = 'white';
-box.style.textAlign = 'center';
-box.style.lineHeight = '50px';
-box.style.cursor = 'pointer';
-box.innerHTML = 'Status';
+javascript:(function() {
+  // Function to create a box
+  function createBox() {
+    const box = document.createElement('div');
+    box.style.position = 'fixed';
+    box.style.bottom = '0';
+    box.style.left = '0';
+    box.style.width = '16px';
+    box.style.height = '16px';
+    box.style.backgroundColor = 'blue';
+    return box;
+  }
 
-// Append the box to the document body
-document.body.appendChild(box);
+  // Function to toggle box color
+  function toggleBox(box) {
+    box.style.backgroundColor = box.style.backgroundColor === 'blue' ? 'red' : 'blue';
+  }
 
-let isProcessing = false;
-let switchTime;
-let resetTimeout;
+  // Create and append the box to the document body
+  const myBox = createBox();
+  document.body.appendChild(myBox);
 
-// Function to toggle box color
-function toggleBoxColor() {
-  box.style.backgroundColor = isProcessing ? 'red' : 'blue';
-}
+  // Function to handle cursor change
+  function handleCursorChange(mutations) {
+    mutations.forEach(function (mutation) {
+      const currentCursor = document.body.style.cursor;
 
-// Function to reset processing status after a delay
-function resetProcessingStatus() {
-  isProcessing = false;
-  toggleBoxColor();
-}
-
-// Function to handle cursor change
-function handleCursorChange(mutations) {
-  mutations.forEach(function (mutation) {
-    const currentCursor = document.body.style.cursor;
-
-    if (currentCursor === 'wait' && !isProcessing) {
-      switchTime = new Date().getTime();
-      isProcessing = true;
-      toggleBoxColor();
-    } else if (currentCursor === 'default' && isProcessing) {
-      const timeDifference = new Date().getTime() - switchTime;
-      if (timeDifference > 1500) {
-        isProcessing = false;
-        toggleBoxColor();
-
-        // Reset processing status after a delay
-        clearTimeout(resetTimeout);
-        resetTimeout = setTimeout(resetProcessingStatus, 1500);
+      if (currentCursor === 'wait') {
+        toggleBox(myBox);
+      } else if (currentCursor === 'default') {
+        setTimeout(function () {
+          if (document.body.style.cursor === 'default') {
+            toggleBox(myBox);
+          }
+        }, 1500);
       }
-    }
-  });
-}
+    });
+  }
 
-// Create a MutationObserver to watch for changes in the style attribute of the body
-const observer = new MutationObserver(handleCursorChange);
-observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+  // Create a MutationObserver to watch for changes in the style attribute of the body
+  const observer = new MutationObserver(handleCursorChange);
+  observer.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+})();
